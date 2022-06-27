@@ -7,17 +7,17 @@ jobs:
 
       - image: cimg/python:3.10.1
         auth:
-          username: $DOCKER_USER 
+          username: mydockerhub-user 
           password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
         environment:
           TEST_DATABASE_URL: postgresql://root@localhost/circle_test
 
     # Service container image
 
-      - image: cimg/postgres:14.2.0
-        auth:
-          username: mydockerhub-user
-          password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
+      #- image: cimg/postgres:14.2.0
+        #auth:
+          #username: $DOCKER_USER
+          #password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
 
     steps:
       - checkout
