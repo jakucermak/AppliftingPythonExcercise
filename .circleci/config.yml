@@ -52,8 +52,8 @@ jobs:
           name: Running pylint & pytest
           command: |
             . venv/bin/activate
-          #  pylint $(git ls-files '*.py') || true
-          #  pytest
+            pylint $(git ls-files '*.py') || true
+            pytest
       - store_artifacts:
           path: test-reports/
           destination: python_app
