@@ -5,7 +5,7 @@ jobs:
 
     # Primary container image where all commands run
 
-      - image: circleci/python:3.6.2-stretch-browsers
+      - image: cimg/python:3.10.1
         auth:
           username: mydockerhub-user
           password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
