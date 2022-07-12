@@ -1,4 +1,4 @@
-"""applifting_python URL Configuration
+"""product_ms URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.0/topics/http/urls/
@@ -15,7 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.urls import include
+from product.views import Products
+
+import product
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('products/', include('product.urls')),
+    path('products/', Products.as_view(), name= 'products' )
 ]

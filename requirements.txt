@@ -7,3 +7,5 @@ pylint
 pylint-django
 djangorestframework
 django-environ
+factory_boy
+Faker

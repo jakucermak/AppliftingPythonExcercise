@@ -1,0 +1,28 @@
+{
+    "python.testing.pytestArgs": [
+        "."
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "AppliftingExercise",
+            "database": "Applifting_Exercise",
+            "username": "postgres",
+            "password": "postgres"
+        }
+    ],
+    "cSpell.words": [
+        "applifting",
+        "cokoliv",
+        "dcba",
+        "motorovka",
+        "přeřízne",
+        "sekačka",
+        "usekne"
+    ]
+}
