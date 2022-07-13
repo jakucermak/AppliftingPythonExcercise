@@ -53,7 +53,7 @@ jobs:
           command: |
             . venv/bin/activate
             pylint $(git ls-files '*.py') || true
-            pytest product_ms
+            pytest
       - store_artifacts:
           path: test-reports/
           destination: python_app
