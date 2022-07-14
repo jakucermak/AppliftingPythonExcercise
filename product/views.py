@@ -1,15 +1,23 @@
+
+import requests
 from django.core.exceptions import ObjectDoesNotExist
+
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from product_ms.settings import BASE_URL as base_url
 from . import error
 from .models import Product
 from .serializers import ProductSerializer
 
 
-class Products(APIView):
+@api_view(['POST'])
+def auth(request):
+    return Response(requests.post(f'{base_url}/auth/'))
+
+class ProductView(APIView):
 
     def post (self, request):
 
