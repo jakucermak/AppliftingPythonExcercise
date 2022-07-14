@@ -17,7 +17,7 @@ class ProductsCreateTests(APITestCase):
         'product_desc': "ta co přeřízne cokoliv"
         }
 
-        url = reverse('products')
+        url = reverse('product')
 
         response = self.client.post(url, data, format='json')
 
@@ -32,7 +32,7 @@ class ProductsCreateTests(APITestCase):
             'product_desc': "secret thing"
         }
 
-        url = reverse('products')
+        url = reverse('product')
 
         response = self.client.post(url, data, format='json')
 
@@ -48,7 +48,7 @@ class ProductsCreateTests(APITestCase):
             'product_name': 'magic wand'
         }
 
-        url = reverse('products')
+        url = reverse('product')
 
         response = self.client.post(url, data, format='json')
 
@@ -60,7 +60,7 @@ class ProductsCreateTests(APITestCase):
 
     def test_for_no_field_provided(self):
 
-        url = reverse('products')
+        url = reverse('product')
 
         response = self.client.post(url)
 
@@ -83,7 +83,7 @@ class DeleteProductTests(APITestCase):
         Product.objects.create(uuid=uuid,product_name=prod_name,product_description=prod_desc)
 
         data = { 'uuid': str(uuid)}
-        url = reverse('products')
+        url = reverse('product')
         response = self.client.delete(url, data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -93,7 +93,7 @@ class DeleteProductTests(APITestCase):
         data = {
 
         }
-        url = reverse('products')
+        url = reverse('product')
         response = self.client.delete(url,data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -103,7 +103,7 @@ class DeleteProductTests(APITestCase):
         data = {
             'uuid' : str(uuid.uuid4())
         }
-        url = reverse('products')
+        url = reverse('product')
         response = self.client.delete(url,data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

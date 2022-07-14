@@ -11,6 +11,7 @@ from product_ms.settings import BASE_URL as base_url
 from . import error
 from .models import Product
 from .serializers import ProductSerializer
+from .tasks import register_product
 
 
 @api_view(['POST'])
@@ -52,11 +53,27 @@ class ProductView(APIView):
         new_product = Product(product_name=product_name, product_description=product_desc)
         new_product.save()
 
-        response = {
-            'message': status.HTTP_201_CREATED,
-            'id': new_product.uuid
+        data_for_ms = {
+            'id': new_product.id,
+            'name': new_product.product_name,
+            'description': new_product.product_description
         }
-        return Response(response, status=status.HTTP_201_CREATED)
+
+        response_from_ms = register_product(data_for_ms)
+        match response_from_ms.status_code:
+            case 200:
+                response = {
+                'message': status.HTTP_201_CREATED,
+                'id': new_product.id
+            }
+
+                return Response(response, status=status.HTTP_201_CREATED)
+            case 400:
+                return Response(response_from_ms.json(), status.HTTP_400_BAD_REQUEST)
+
+            case 401: 
+                return Response(response_from_ms.json(), status.HTTP_401_UNAUTHORIZED)
+
 
     def delete (self, request):
 
