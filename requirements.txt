@@ -9,3 +9,4 @@ djangorestframework
 django-environ
 factory_boy
 Faker
+requests
