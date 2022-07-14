@@ -9,47 +9,46 @@ from .models import Product
 from .serializers import ProductSerializer
 
 
-@api_view(['POST'])
-def register_product(request):
-
-    product_desc = ""
-    product_name = ""
-
-    if len(request.data) < 1:
-        content_msg = {
-                'code': status.HTTP_400_BAD_REQUEST,
-                'message': error.PROD_INFO_ERR
-        }
-        return Response(content_msg, status=status.HTTP_400_BAD_REQUEST)
-    #TODO: Remove string
-    if not 'product_name' in request.data:
-        content_msg = {
-                'code': status.HTTP_400_BAD_REQUEST,
-                'message': error.PROD_NAME_ERR
-            }
-        return Response(content_msg, status=status.HTTP_400_BAD_REQUEST)
-
-    product_name = request.data['product_name']
-    #TODO: Same above
-    if not 'product_desc' in request.data:
-        content_msg = {
-                'code': status.HTTP_400_BAD_REQUEST,
-                'message': error.PROD_DESC_ERR
-            }
-        return Response(content_msg, status=status.HTTP_400_BAD_REQUEST)
-
-    product_desc = request.data['product_desc']
-
-    new_product = Product(product_name=product_name, product_description=product_desc)
-    new_product.save()
-
-    response = {
-        'message': status.HTTP_201_CREATED,
-        'id': new_product.uuid
-    }
-    return Response(response, status=status.HTTP_201_CREATED)
-
 class Products(APIView):
+
+    def post (self, request):
+
+        product_desc = ""
+        product_name = ""
+
+        if len(request.data) < 1:
+            content_msg = {
+                    'code': status.HTTP_400_BAD_REQUEST,
+                    'message': error.PROD_INFO_ERR
+            }
+            return Response(content_msg, status=status.HTTP_400_BAD_REQUEST)
+        #TODO: Remove string
+        if not 'product_name' in request.data:
+            content_msg = {
+                    'code': status.HTTP_400_BAD_REQUEST,
+                    'message': error.PROD_NAME_ERR
+                }
+            return Response(content_msg, status=status.HTTP_400_BAD_REQUEST)
+
+        product_name = request.data['product_name']
+        #TODO: Same above
+        if not 'product_desc' in request.data:
+            content_msg = {
+                    'code': status.HTTP_400_BAD_REQUEST,
+                    'message': error.PROD_DESC_ERR
+                }
+            return Response(content_msg, status=status.HTTP_400_BAD_REQUEST)
+
+        product_desc = request.data['product_desc']
+
+        new_product = Product(product_name=product_name, product_description=product_desc)
+        new_product.save()
+
+        response = {
+            'message': status.HTTP_201_CREATED,
+            'id': new_product.uuid
+        }
+        return Response(response, status=status.HTTP_201_CREATED)
 
     def delete (self, request):
 
