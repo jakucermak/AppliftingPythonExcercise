@@ -17,7 +17,7 @@ class ProductsCreateTests(APITestCase):
         'product_desc': "ta co přeřízne cokoliv"
         }
 
-        url = reverse('register')
+        url = reverse('products')
 
         response = self.client.post(url, data, format='json')
 
@@ -32,7 +32,7 @@ class ProductsCreateTests(APITestCase):
             'product_desc': "secret thing"
         }
 
-        url = reverse('register')
+        url = reverse('products')
 
         response = self.client.post(url, data, format='json')
 
@@ -48,7 +48,7 @@ class ProductsCreateTests(APITestCase):
             'product_name': 'magic wand'
         }
 
-        url = reverse('register')
+        url = reverse('products')
 
         response = self.client.post(url, data, format='json')
 
@@ -60,7 +60,7 @@ class ProductsCreateTests(APITestCase):
 
     def test_for_no_field_provided(self):
 
-        url = reverse('register')
+        url = reverse('products')
 
         response = self.client.post(url)
 
