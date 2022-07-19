@@ -5,7 +5,7 @@ from faker import Faker
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from . import error
+from .constants import error
 from .models import Product
 
 

@@ -1,29 +1,24 @@
 
-import requests
+
 from django.core.exceptions import ObjectDoesNotExist
 
 from rest_framework import status
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.decorators import api_view
 
-from product_ms.settings import BASE_URL as base_url
-from . import error
+from .constants import error
 from .models import Product
 from .serializers import ProductSerializer
-from .tasks import register_product
-
-
-@api_view(['POST'])
-def auth(request):
-    return Response(requests.post(f'{base_url}/auth/'))
+from .offers_communication import OffersMicroserviceCommunicationLayer as OffersCommLayer
 
 class ProductView(APIView):
 
+    off_comm_lay = OffersCommLayer()
+
     def post (self, request):
 
-        product_desc = ""
-        product_name = ""
+        product_desc, product_name = "",""
 
         if len(request.data) < 1:
             content_msg = {
@@ -53,26 +48,7 @@ class ProductView(APIView):
         new_product = Product(product_name=product_name, product_description=product_desc)
         new_product.save()
 
-        data_for_ms = {
-            'id': new_product.id,
-            'name': new_product.product_name,
-            'description': new_product.product_description
-        }
-
-        response_from_ms = register_product(data_for_ms)
-        match response_from_ms.status_code:
-            case 200:
-                response = {
-                'message': status.HTTP_201_CREATED,
-                'id': new_product.id
-            }
-
-                return Response(response, status=status.HTTP_201_CREATED)
-            case 400:
-                return Response(response_from_ms.json(), status.HTTP_400_BAD_REQUEST)
-
-            case 401: 
-                return Response(response_from_ms.json(), status.HTTP_401_UNAUTHORIZED)
+        return self.off_comm_lay.register_product(new_product)
 
 
     def delete (self, request):
@@ -97,7 +73,7 @@ class ProductView(APIView):
             product = Product.objects.get(uuid=request.data['uuid'])
 
         except ObjectDoesNotExist:
-            return Response({'message' : error.PROD_UUID_ERR}, status.HTTP_400_BAD_REQUEST)
+            return Response({'message' : error.PROD_PRODNOTFOUND_ERR}, status.HTTP_400_BAD_REQUEST)
 
         serializer = ProductSerializer(product,data=request.data, partial=True)
         if serializer.is_valid():
@@ -105,3 +81,15 @@ class ProductView(APIView):
             return Response(serializer.data, status.HTTP_200_OK)
 
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def get_product(request, pk):
+
+    try:
+        product = Product.objects.get(id=pk)
+
+    except ObjectDoesNotExist:
+        return Response({'message' : error.PROD_PRODNOTFOUND_ERR})
+
+    serialized_product = ProductSerializer(product)
+    return Response(status=status.HTTP_200_OK, data=serialized_product.data)

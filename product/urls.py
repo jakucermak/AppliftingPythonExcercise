@@ -1,7 +1,7 @@
-from .views import auth
 from django.urls import path
+from .views import get_product
 
 
 urlpatterns = [
-    path('auth/', auth, name = 'auth' )
+    path('<int:pk>', get_product)
 ]
