@@ -1,16 +1,17 @@
 
-
 from django.core.exceptions import ObjectDoesNotExist
 
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
+from .utils import get_last_used_token
+
 
 from .constants import error
-from .models import Product
+from .models import Offer, Product
 from .serializers import ProductSerializer
-from .offers_communication import OffersMicroserviceCommunicationLayer as OffersCommLayer
+from .offers_communication import get_offers, OffersMicroserviceCommunicationLayer as OffersCommLayer
 
 class ProductView(APIView):
 
@@ -18,42 +19,26 @@ class ProductView(APIView):
 
     def post (self, request):
 
-        product_desc, product_name = "",""
+        if not request.data:
+            return Response(data={'code': status.HTTP_400_BAD_REQUEST,
+            'message': error.PROD_INFO_ERR},status=status.HTTP_400_BAD_REQUEST)
 
-        if len(request.data) < 1:
-            content_msg = {
-                    'code': status.HTTP_400_BAD_REQUEST,
-                    'message': error.PROD_INFO_ERR
-            }
-            return Response(content_msg, status=status.HTTP_400_BAD_REQUEST)
-        #TODO: Remove string
-        if not 'product_name' in request.data:
-            content_msg = {
-                    'code': status.HTTP_400_BAD_REQUEST,
-                    'message': error.PROD_NAME_ERR
-                }
-            return Response(content_msg, status=status.HTTP_400_BAD_REQUEST)
+        if 'name' not in request.data:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data = 
+            {'code': status.HTTP_400_BAD_REQUEST, 'message' : error.PROD_NAME_ERR})
+        if 'description' not in request.data:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data =
+             {'code': status.HTTP_400_BAD_REQUEST, 'message' : error.PROD_DESC_ERR})
 
-        product_name = request.data['product_name']
-        #TODO: Same above
-        if not 'product_desc' in request.data:
-            content_msg = {
-                    'code': status.HTTP_400_BAD_REQUEST,
-                    'message': error.PROD_DESC_ERR
-                }
-            return Response(content_msg, status=status.HTTP_400_BAD_REQUEST)
+        new_product = Product.objects.create(name=request.data['name'],description=request.data['description'])
 
-        product_desc = request.data['product_desc']
+        register_to_offers = self.off_comm_lay.register_product(new_product, get_last_used_token())
 
-        new_product = Product(product_name=product_name, product_description=product_desc)
-        new_product.save()
-
-        return self.off_comm_lay.register_product(new_product)
+        return register_to_offers
 
 
     def delete (self, request):
 
-        #TODO: same above
         if not 'uuid' in request.data:
             return Response({'message': error.PROD_UUID_ERR },status.HTTP_400_BAD_REQUEST)
 
@@ -65,7 +50,7 @@ class ProductView(APIView):
         return Response({'message':'deleted'},status=status.HTTP_200_OK)
 
     def patch(self, request):
-        #TODO: same above
+
         if not 'uuid' in request.data:
             return Response({'message' : error.PROD_UUID_ERR}, status.HTTP_400_BAD_REQUEST)
 
@@ -93,3 +78,22 @@ def get_product(request, pk):
 
     serialized_product = ProductSerializer(product)
     return Response(status=status.HTTP_200_OK, data=serialized_product.data)
+
+
+@api_view(['GET'])
+def offers(request):
+    token = get_last_used_token()
+    response = get_offers(token)
+    return Response(data=response.data, status=response.status_code)
+
+@api_view(['POST'])
+def get_auth_token(request):
+    off_comm_lay = OffersCommLayer()
+    return off_comm_lay.auth()
+
+@api_view(['GET'])
+def update_offers(request):
+    from .tasks import update_offer_prices
+    update_offer_prices()
+
+    return Response()
