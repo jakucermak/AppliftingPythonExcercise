@@ -17,7 +17,7 @@ class OffersMicroserviceCommunicationLayer():
 
         ResponseFromMS = namedtuple('ResponseFromMS',['status_code', 'data'])
 
-        return ResponseFromMS(status=response.status_code, data={'access-token': token.value})
+        return ResponseFromMS(status_code=response.status_code, data={'access-token': token.value})
 
     def register_product(self, product, token):
 

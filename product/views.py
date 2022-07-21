@@ -34,7 +34,7 @@ class ProductView(APIView):
 
         register_to_offers = self.off_comm_lay.register_product(new_product, get_last_used_token())
 
-        return register_to_offers
+        return Response(register_to_offers.data,register_to_offers.status_code)
 
 
     def delete (self, request):

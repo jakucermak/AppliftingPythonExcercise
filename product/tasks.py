@@ -21,6 +21,8 @@ def update_offer_prices():
 
             if offers_response.status_code == 200:
                 for offer in offers_response.data:
+                    if not Offer.objects.filter(id=offer['id']):
+                        Offer.objects.create(id=offer['id'],price=offer['price'], items_in_stock=offer['items_in_stock'], product=product)
                     Offer.objects.filter(id=offer['id']).update(
                         price=offer['price'],
                         items_in_stock=offer['items_in_stock'])
