@@ -5,34 +5,39 @@ from faker import Faker
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from . import error
+from .offers_communication import OffersMicroserviceCommunicationLayer
+from .constants import error
 from .models import Product
 
 
 class ProductsCreateTests(APITestCase):
+
     def test_for_successfully_created_product(self):
 
+        off_comm_layer = OffersMicroserviceCommunicationLayer()
+        off_comm_layer.auth()
+
         data = {
-        'product_name': "motorovka",
-        'product_desc': "ta co přeřízne cokoliv"
+        'description': "ta co přeřízne cokoliv",
+        'name': "motorovka",
         }
 
-        url = reverse('products')
+        url = reverse('product')
 
         response = self.client.post(url, data, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         self.assertEqual(Product.objects.count(), 1)
-        self.assertEqual(Product.objects.get().product_name, 'motorovka')
+        self.assertEqual(Product.objects.get().name, 'motorovka')
 
     def test_for_not_provided_prod_name(self):
 
         data = {
-            'product_desc': "secret thing"
+            'description': "secret thing"
         }
 
-        url = reverse('products')
+        url = reverse('product')
 
         response = self.client.post(url, data, format='json')
 
@@ -45,10 +50,10 @@ class ProductsCreateTests(APITestCase):
     def test_for_not_provided_prod_desc(self):
 
         data = {
-            'product_name': 'magic wand'
+            'name': 'magic wand'
         }
 
-        url = reverse('products')
+        url = reverse('product')
 
         response = self.client.post(url, data, format='json')
 
@@ -60,7 +65,7 @@ class ProductsCreateTests(APITestCase):
 
     def test_for_no_field_provided(self):
 
-        url = reverse('products')
+        url = reverse('product')
 
         response = self.client.post(url)
 
@@ -77,13 +82,13 @@ class DeleteProductTests(APITestCase):
         faker = Faker()
 
         uuid = faker.unique.uuid4(cast_to=None)
-        prod_name = faker.unique.pystr()
-        prod_desc = faker.sentence(nb_words=10)
+        name = faker.unique.pystr()
+        desc = faker.sentence(nb_words=10)
 
-        Product.objects.create(uuid=uuid,product_name=prod_name,product_description=prod_desc)
+        Product.objects.create(uuid=uuid,name=name,description=desc)
 
         data = { 'uuid': str(uuid)}
-        url = reverse('products')
+        url = reverse('product')
         response = self.client.delete(url, data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -93,7 +98,7 @@ class DeleteProductTests(APITestCase):
         data = {
 
         }
-        url = reverse('products')
+        url = reverse('product')
         response = self.client.delete(url,data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -103,7 +108,7 @@ class DeleteProductTests(APITestCase):
         data = {
             'uuid' : str(uuid.uuid4())
         }
-        url = reverse('products')
+        url = reverse('product')
         response = self.client.delete(url,data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

@@ -1,7 +1,9 @@
-from .views import auth
 from django.urls import path
+from .views import get_product, offers, update_offers
 
 
 urlpatterns = [
-    path('auth/', auth, name = 'auth' )
-]
+    path('<int:pk>', get_product),
+    path('offers/', offers),
+    path('offers/update/', update_offers)
+    ]

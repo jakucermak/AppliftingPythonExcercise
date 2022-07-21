@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 import environ
 from pathlib import Path
-
 # Initialise environment variables
 env = environ.Env()
 environ.Env.read_env()
@@ -33,6 +32,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+CELERY_BROKER_URL = 'amqp://localhost'
+
 
 # Application definition
 
@@ -45,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
