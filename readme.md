@@ -29,7 +29,7 @@ DATABASE_PASS=users_pass_for_db
 DATABASE_HOST=address_of_your_db_server
 DATABASE_PORT=default_for_postgres_db: 5432
 SECRET_KEY=some_secure_string
-BASEURL= https://applifting-python-excercise-ms.herokuapp.com/api/v1
+BASEURL= url for offers microservice
 
 ```
 
@@ -58,3 +58,4 @@ $ rabbitmq-server
 $ celery -A product_ms worker -B
 ```
 
+### Have fun. 🙂
