@@ -5,5 +5,5 @@ from .views import get_product, offers, update_offers
 urlpatterns = [
     path('<int:pk>', get_product),
     path('offers/', offers),
-    path('offers/update/', update_offers)
+    path('offers/<int:pk>/update/', update_offers)
     ]

@@ -14,6 +14,14 @@ class Offer(models.Model):
     items_in_stock = models.BigIntegerField(db_column='items_in_stock')
     product = models.ForeignKey(Product,on_delete = models.CASCADE, db_column='product_id')
 
+    def update_or_create_offer(self, product, product_offers):
+
+        for offer in product_offers:
+            if not Offer.objects.filter(id=offer['id']):
+                Offer.objects.create(id=offer['id'],price=offer['price'], items_in_stock=offer['items_in_stock'], product=product)
+            Offer.objects.filter(id=offer['id']).update(price=offer['price'],items_in_stock=offer['items_in_stock'])
+
+
 class Token(models.Model):
 
     class Owner(models.TextChoices):
