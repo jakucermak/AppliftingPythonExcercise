@@ -47,12 +47,12 @@ $ python manage.py migrate
 ```bash
 #django server
 $ python manage.py runserver
-#RabbitMQ message broker
 ```
 
 3. At this time, we need to authenticate Product MS to Offers MS. We approach this by visiting our */offers/auth/*
 
 ```bash
+#RabbitMQ message broker
 $ rabbitmq-server
 #celery periodic tasks to update offers
 $ celery -A product_ms worker -B
