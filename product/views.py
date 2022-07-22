@@ -1,17 +1,15 @@
 
 from django.core.exceptions import ObjectDoesNotExist
-
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
+
 from .utils import get_last_used_token
-
-
 from .constants import error
-from .models import Offer, Product
+from .models import Product, Offer
 from .serializers import ProductSerializer
-from .offers_communication import get_offers, OffersMicroserviceCommunicationLayer as OffersCommLayer
+from .offers_communication import get_offers, OffersMicroserviceCommunicationLayer as OffersCommLayer, get_offers_for_product
 
 class ProductView(APIView):
 
@@ -88,12 +86,20 @@ def offers(request):
 
 @api_view(['POST'])
 def get_auth_token(request):
-    off_comm_lay = OffersCommLayer()
-    return off_comm_lay.auth()
+    authenticate = OffersCommLayer().auth()
+    return Response(data=authenticate.data, status=authenticate.status_code)
 
 @api_view(['GET'])
-def update_offers(request):
-    from .tasks import update_offer_prices
-    update_offer_prices()
+def update_offers(request,pk):
 
-    return Response()
+    try:
+        product = Product.objects.get(id=pk)
+    except ObjectDoesNotExist:
+        Response(data={'message' : error.PROD_PRODNOTFOUND_ERR},status=status.HTTP_400_BAD_REQUEST)
+
+    token = get_last_used_token()
+    offers_from_ms = get_offers_for_product(product.id, token)
+    if offers_from_ms == 200:
+        Offer().update_or_create_offer(product=product, product_offers=offers_from_ms)
+
+    return Response(data=offers_from_ms.data, status=offers_from_ms.status_code)
